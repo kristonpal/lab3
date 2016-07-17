@@ -1,0 +1,135 @@
+/*
+Program: To convert infix expression to postfix expression.
+* Author: Kriston Pal
+* Date: 16/07/2016
+- * Ref: Data Structures. Using C and C++, Chap 2, page 107
+*/
+
+#define MAXITEMS 50
+#include <stdio.h>
+#include<conio.h>
+#include <string.h>
+#include <stdlib.h>
+#include <math.h>
+
+typedef struct{
+	int top;
+	int items [MAXITEMS];
+}
+stack;
+
+ void push(stack *, char);
+ char pop(stack *);
+ int precedence(char, char);
+ int isdigit(int);
+ void pop_test(stack *, char *, int *);
+ 
+int main()
+{
+	stack s;
+	s.top= -1;
+	char infix[MAXITEMS];
+    char postr[MAXITEMS];	
+ 	char symb, topsymb = '+';
+    int i = 0, und, outpos = 0;
+ 
+    printf ("Enter an infix expression \n");
+ 	gets(infix);
+ 	
+ for (i = 0; (symb = infix[i]) <=strlen(infix); i++) {
+ 		
+ 		if (isdigit(symb)) {
+ 			postr[outpos++] = symb;
+ 		} else {
+ 			pop_test (&s, &topsymb, &und);
+ 			while (!und && precedence(topsymb, symb)) {
+ 				postr[outpos++] = topsymb;
+ 				pop_test (&s, &topsymb, &und);
+ 			}
+ 		if (!und) {
+ 			push (&s, topsymb);
+ 		} 
+ 		if (und || (symb != ')')) {
+ 			push (&s, symb);
+ 		} else {
+ 			topsymb = pop(&s);
+ 		}
+ 	}
+ 	while (s.top != -1) {
+ 		printf ("Postfix Expression = %s", pop(&s));
+ 		postr[outpos] = '\0';
+ 	}
+ 	
+
+}
+}
+
+void push (stack*s, char x)
+{
+	if(s-> top==MAXITEMS-1)
+	{
+		printf("overflow");
+		exit(0);
+	}else
+	{
+	++s-> top;
+	s-> items [s->top]=x;
+	s++;
+}
+}
+
+char pop(stack*s)
+{
+  if(s-> top==-1)
+	{	
+	printf("underflow");
+	exit(0);
+    }
+else
+   {
+	return s -> items[s->top--];
+   }
+}
+
+  int isdigit(int symb) {
+ 	return (symb >= '0' && symb <= '9');
+ }
+ 
+ void pop_test(stack *s, char *x, int *und) {
+ 	if (s->top == -1) {
+ 		*und = 1;
+ 		return;
+ 	}
+ 	*und = 0;
+ 	*x = s->items[s->top--];
+ 	return;
+   }
+ 
+ int precedence(char x, char y) 
+ {
+ 	int z, p;
+ 		
+ 	switch (x) 
+	    {
+ 		case '(' : z = 0; break;
+ 		case '$' : z = 3; break;
+ 		case '*' : z = 2; break;
+ 		case '/' : z = 2; break;
+ 		case '+' : z = 1; break;
+ 		case '-' : z = 1; break;
+ 		default  : printf ("Error! \n");
+ 	    }
+ 	switch (y) 
+	    {
+ 		case '(' : p = 9; break;
+ 		case ')' : p = 0; break;
+ 		case '$' : p = 3; break;
+ 		case '*' : p = 2; break;
+ 		case '/' : p = 2; break;
+ 		case '+' : p = 1; break;
+ 		case '-' : p = 1; break;
+ 		default  : printf ("Error! \n");
+ 	    }
+ 		
+ 	return(z>p);
+ }
